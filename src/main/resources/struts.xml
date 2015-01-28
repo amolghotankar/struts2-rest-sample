@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<constant name="struts.enable.DynamicMethodInvocation" value="true"/>
+	<constant name="struts.devMode" value="true"/>
+	<constant name="struts.freemarker.templatesCache" value="false"/>
+	<constant name="struts.xslt.nocache" value="false"/>
+	<constant name="struts.serve.static" value="false" />
+	  
+	<constant name="struts.objectFactory" value="spring"/> 
+	<constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory"/>
+	<constant name="struts.objectFactory.spring.autoWire" value="type"/>
+	<constant name="struts.ognl.allowStaticMethodAccess" value="true"/>
+	<constant name="struts.url.includeParams" value="get" />
+	<constant name="struts.custom.i18n.resources" value="global" />
+	<constant name="struts.enable.SlashesInActionNames" value="true"/>
+    
+    <constant name="struts.mapper.class" value="rest" />
+    <constant name="struts.action.extension" value="xhtml,,xml,json,action"/>
+	<constant name="struts.mapper.prefixMapping" value="/rest:rest,:struts"/>
+    
+    <constant name="struts.convention.action.suffix" value="Controller"/>
+	<constant name="struts.convention.action.mapAllMatches" value="true"/>
+	<constant name="struts.convention.default.parent.package" value="new-rest-default"/>
+	<constant name="struts.convention.package.locators" value="rest"/>
+	
+	<package name="new-rest-default" extends="json-default,rest-default" namespace="/" strict-method-invocation="true">
+		
+		<result-types>
+			<result-type name="json" class="org.apache.struts2.json.JSONResult"/>
+		</result-types>
+		<interceptors>
+            <interceptor name="rest" class="org.apache.struts2.rest.ContentTypeInterceptor"/>
+            <interceptor name="restWorkflow" class="org.apache.struts2.rest.RestWorkflowInterceptor"/>
+            <interceptor name="messages" class="org.apache.struts2.interceptor.MessageStoreInterceptor" />
+            <interceptor name="security" class="com.company.product.interceptor.SecurityInterceptor"/>
+
+            <!-- A complete stack with all the common interceptors in place.
+                 Generally, this stack should be the one you use, though it
+                 may do more than you need. Also, the ordering can be
+                 switched around (ex: if you wish to have your servlet-related
+                 objects applied before prepare() is called, you'd need to move
+                 servletConfig interceptor up.
+
+                 This stack also excludes from the normal validation and workflow
+                 the method names input, back, and cancel. These typically are
+                 associated with requests that should not be validated.
+                 -->
+            <interceptor-stack name="restCustomStack">
+                <interceptor-ref name="exception"/>
+                <interceptor-ref name="alias"/>
+                <interceptor-ref name="servletConfig"/>
+                <interceptor-ref name="messages">
+                    <param name="operationMode">AUTOMATIC</param>
+                </interceptor-ref>
+                <interceptor-ref name="prepare"/>
+                <interceptor-ref name="i18n"/>
+                <interceptor-ref name="chain"/>
+                <interceptor-ref name="debugging"/>
+                <interceptor-ref name="profiling"/>
+                <interceptor-ref name="actionMappingParams"/>
+                <interceptor-ref name="scopedModelDriven"/>
+                <interceptor-ref name="modelDriven">
+                    <param name="refreshModelBeforeResult">true</param>
+                </interceptor-ref>
+                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="checkbox"/>
+                <interceptor-ref name="staticParams"/>
+                <interceptor-ref name="params">
+                  <param name="excludeParams">dojo\..*</param>
+                </interceptor-ref>
+                <interceptor-ref name="rest" />
+                <interceptor-ref name="conversionError"/>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse,show,edit,editNew</param>
+                </interceptor-ref>
+                <interceptor-ref name="restWorkflow">
+                    <param name="excludeMethods">input,back,cancel,browse,show,edit,editNew</param>
+                </interceptor-ref>
+               	<interceptor-ref name="security"></interceptor-ref>
+            </interceptor-stack>
+
+        </interceptors>
+
+        <default-interceptor-ref name="restCustomStack"/>
+	</package>
+
+</struts>
